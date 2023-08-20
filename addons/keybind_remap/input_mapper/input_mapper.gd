@@ -45,12 +45,30 @@ func _on_choosed(event: InputEvent) -> void:
 		return
 	
 	input_event = event
+	input_icon.refresh()
 	
-	# TODO Assign new input
+	if Engine.is_editor_hint() or !InputMap.has_action(action_name):
+		return
+	
+	var events: Array[InputEvent] = InputMap.action_get_events(action_name)
+	if -len(events) > input_idx or input_idx >= len(events):
+		return
+	
+	events[input_idx] = input_event
+	
+	InputMap.action_erase_events(action_name)
+	for action_event in events:
+		InputMap.action_add_event(action_name, action_event)
+	
+	if is_inside_tree():
+		get_tree().call_group(&"action_icons", &"refresh")
+	elif input_chooser.is_inside_tree():
+		input_chooser.get_tree().call_group(&"action_icons", &"refresh")
+	
+	ProjectSettings.save_custom("override.cfg")
 	
 	# TODO Save input
 	
-	input_icon.refresh()
 	
 
 
