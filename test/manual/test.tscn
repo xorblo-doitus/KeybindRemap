@@ -1,0 +1,55 @@
+[gd_scene load_steps=6 format=3 uid="uid://clmbsaea2c3wa"]
+
+[ext_resource type="Texture2D" uid="uid://clklp7l0gqcje" path="res://addons/ActionIcon/Keyboard/Blank.png" id="1_k05vh"]
+[ext_resource type="Script" path="res://addons/ActionIcon/ActionIcon.gd" id="2_q6kh0"]
+[ext_resource type="PackedScene" uid="uid://dcjp53yyqfql7" path="res://addons/keybind_remap/input_display/input_display.tscn" id="4_02o2g"]
+[ext_resource type="PackedScene" uid="uid://bqptyqtakvwl7" path="res://addons/keybind_remap/input_mapper/input_mapper.tscn" id="4_sf0es"]
+
+[sub_resource type="GDScript" id="GDScript_ma6oa"]
+script/source = "extends Node
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		print(\"_input: \", event)
+"
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ActionIcon" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 100.0
+offset_bottom = 100.0
+texture = ExtResource("1_k05vh")
+script = ExtResource("2_q6kh0")
+
+[node name="InputDisplay" parent="." instance=ExtResource("4_02o2g")]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -100.0
+offset_right = 109.0
+grow_vertical = 0
+action_name = &"test"
+
+[node name="InputMapper" parent="." instance=ExtResource("4_sf0es")]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -54.5
+offset_right = 54.5
+offset_bottom = 100.0
+grow_horizontal = 2
+action_name = &"test"
+focus_style_box = null
+
+[node name="Node" type="Node" parent="."]
+script = SubResource("GDScript_ma6oa")

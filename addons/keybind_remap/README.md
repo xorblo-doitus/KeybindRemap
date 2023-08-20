@@ -1,0 +1,26 @@
+# KeybindRemap (Unfinished)
+
+Utility scenes to help remapping keybinds.
+
+
+## Intallation
+
+Download only `res://addons/keybind_remap` and `res://addons/ActionIcon`,
+then enable the addon in `Project → Project Settings → Plugins`. (Enabling
+Action Icon is not necessary)
+
+
+## Godot version
+
+Godot 4.1.1, may not work with 4.0, wont work with 3.x
+
+
+## Credits:
+	
+See [credits](CREDITS.md) file.
+
+
+## See also :
+
+A good in-game key remapping addon:
+https://github.com/Orama-Interactive/Keychain
