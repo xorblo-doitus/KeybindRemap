@@ -1,5 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://clmbsaea2c3wa"]
+[gd_scene load_steps=7 format=3 uid="uid://clmbsaea2c3wa"]
 
+[ext_resource type="Script" path="res://test/manual/test.gd" id="1_d5fq3"]
 [ext_resource type="Texture2D" uid="uid://clklp7l0gqcje" path="res://addons/ActionIcon/Keyboard/Blank.png" id="1_k05vh"]
 [ext_resource type="Script" path="res://addons/ActionIcon/ActionIcon.gd" id="2_q6kh0"]
 [ext_resource type="PackedScene" uid="uid://dcjp53yyqfql7" path="res://addons/keybind_remap/input_display/input_display.tscn" id="4_02o2g"]
@@ -21,6 +22,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_d5fq3")
 
 [node name="ActionIcon" type="TextureRect" parent="."]
 layout_mode = 0

@@ -65,9 +65,7 @@ func _on_choosed(event: InputEvent) -> void:
 	elif input_chooser.is_inside_tree():
 		input_chooser.get_tree().call_group(&"action_icons", &"refresh")
 	
-	ProjectSettings.save_custom("override.cfg")
-	
-	# TODO Save input
+	KeybindsSaver.save_keybinds()
 	
 	
 
