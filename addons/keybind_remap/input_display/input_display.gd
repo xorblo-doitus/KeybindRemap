@@ -4,38 +4,47 @@ class_name InputDisplay
 
 @export var input_idx: int:
 	set(new):
-		input_idx = new
-		if input_icon:
-			input_icon.input_idx = new
+		if input_icon: _set_input_idx(new)
+		else: _set_input_idx.call_deferred(new)
+	get:
+		if input_icon: return input_icon.input_idx
+		else: return 0
+func _set_input_idx(new: int) -> void:
+	input_icon.input_idx = new
 @export var action_name: StringName:
 	set(new):
-		action_name = new
-		if input_icon:
-			input_icon.action_name = new
+		if input_icon: _set_action_name(new)
+		else: _set_action_name.call_deferred(new)
+	get:
+		if input_icon: return input_icon.action_name
+		else: return &""
+func _set_action_name(new: StringName) -> void:
+	input_icon.action_name = new
 @export var input_event: InputEvent:
 	set(new):
-		input_event = new
-		if input_icon:
-			input_icon.input_event = new
+		if input_icon: _set_input_event(new)
+		else: _set_input_event.call_deferred(new)
+	get:
+		if input_icon: return input_icon.input_event
+		else: return null
+func _set_input_event(new: InputEvent) -> void:
+	input_icon.input_event = new
+	
 @export var focus_style_box: StyleBox
 @export var physical_icon_modulate: Color = Color(1, 1, 1, 0.75):
 	set(new):
 		physical_icon_modulate = new
 		if physical_icon:
-			physical_icon.modulate = physical_icon_modulate
+			_update_physical_icon_modulate()
+		else:
+			_update_physical_icon_modulate.call_deferred()
+func _update_physical_icon_modulate() -> void:
+	physical_icon.modulate = physical_icon_modulate
 
-@onready var input_icon: TextureRect = $InputIcon
+@onready var input_icon: InputIcon = $InputIcon
 @onready var fallback_label: Label = $FallbackLabel
 @onready var modifiers: HBoxContainer = $Modifiers
 @onready var physical_icon: TextureRect = $InputIcon/PhysicalIcon
-
-
-func _ready() -> void:
-	input_icon.input_idx = input_idx
-	input_icon.action_name = action_name
-	input_icon.input_event = input_event
-	input_event = input_icon.input_event # If it fetched something
-	physical_icon.modulate = physical_icon_modulate
 
 
 func adapt_to(event: InputEvent) -> void:

@@ -73,7 +73,7 @@ func _on_input_display_gui_input(event: InputEvent) -> void:
 		if event.is_match(input_display.input_event) and not event is InputEventMouse:
 			confirm_button.grab_focus.call_deferred()
 		input_display.input_event = event
-		input_display.input_icon._forced_refresh = true
+		_force_refresh()
 
 
 func _on_confirm_button_pressed() -> void:
@@ -87,7 +87,7 @@ func _on_cancel_button_pressed() -> void:
 func _on_physical_toggle_toggled() -> void:
 	if _last_event:
 		input_display.input_event = _setup_physical(_last_event.duplicate())
-		input_display.input_icon._forced_refresh = true
+		_force_refresh()
 
 
 func close(success: bool) -> void:
@@ -107,6 +107,10 @@ func _setup_physical(event: InputEvent) -> InputEvent:
 		else:
 			event.physical_keycode = 0
 	return event
+
+
+func _force_refresh() -> void:
+	input_display.input_icon.force_refresh()
 
 
 func fetch_result() -> InputEvent:

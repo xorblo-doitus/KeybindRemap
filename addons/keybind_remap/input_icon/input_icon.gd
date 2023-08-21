@@ -37,13 +37,19 @@ func _init() -> void:
 	_base_path = "res://addons/ActionIcon/"
 
 
+func force_refresh() -> void:
+	_forced_refresh = true
+	refresh()
+
+
 ## modified from [res://addons/ActionIcon/ActionIcon.gd] to let
 func _refresh() -> void:
+	_pending_refresh = false
+	
 	if Engine.is_editor_hint() or (not is_visible_in_tree() and not _forced_refresh):
 		return
 	
 	_forced_refresh = false
-	_pending_refresh = false
 	
 	var event = input_event # call getter
 	if event == null:

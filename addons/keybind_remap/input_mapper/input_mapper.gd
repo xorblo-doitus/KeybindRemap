@@ -44,8 +44,8 @@ func _on_choosed(event: InputEvent) -> void:
 	if event == null:
 		return
 	
-	input_event = event
-	input_icon.refresh()
+	if input_icon.fetch_input_event() == null:
+		input_event = event
 	
 	if Engine.is_editor_hint() or !InputMap.has_action(action_name):
 		return
@@ -54,7 +54,7 @@ func _on_choosed(event: InputEvent) -> void:
 	if -len(events) > input_idx or input_idx >= len(events):
 		return
 	
-	events[input_idx] = input_event
+	events[input_idx] = event
 	
 	InputMap.action_erase_events(action_name)
 	for action_event in events:

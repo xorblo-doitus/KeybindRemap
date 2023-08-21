@@ -113,6 +113,14 @@ static func save_keybinds(path: String = default_path, ignored_actions: Array[St
 static func _save_action(action: StringName) -> Array[Dictionary]:
 	var saved_action: Array[Dictionary]
 	
+	
+	if InputMap.action_get_deadzone(action) != 0.5:
+		var action_properties: Dictionary = {
+			&"class": &"action_properties",
+			&"dead_zone": InputMap.action_get_deadzone(action)
+		}
+		saved_action.append(action_properties)
+	
 	for event in InputMap.action_get_events(action):
 		saved_action.append(_save_event(event))
 	
@@ -136,6 +144,10 @@ static  func _save_event(event: InputEvent) -> Dictionary:
 			_save_property(saved_event, event, &"physical_keycode", 0)
 			_save_property(saved_event, event, &"unicode", 0)
 		
+		if event is InputEventMouseButton:
+			saved_event[&"class"] = &"InputEventMouseButton"
+			_save_property(saved_event, event, &"button_index", 0)
+			
 		
 	return saved_event
 
@@ -163,14 +175,17 @@ static func load_keybinds(path: String = default_path) -> void:
 		_load_action(action, data[action])
 
 
-static func _load_action(action, data) -> void:
+static func _load_action(action: StringName, data: Array) -> void:
 	if InputMap.has_action(action):
 		InputMap.action_erase_events(action)
 	else:
 		InputMap.add_action(action)
 	
 	for event in data:
-		InputMap.action_add_event(action, _load_event(event))
+		if event[&"class"] == &"action_properties":
+			InputMap.action_set_deadzone(action, event.get(&"dead_zone", 0.5))
+		else:
+			InputMap.action_add_event(action, _load_event(event))
 
 
 static func _load_event(event: Dictionary) -> InputEvent:
@@ -178,6 +193,7 @@ static func _load_event(event: Dictionary) -> InputEvent:
 	
 	match event["class"]:
 		&"InputEventKey": new_event = InputEventKey.new()
+		&"InputEventMouseButton": new_event = InputEventMouseButton.new()
 	
 	if new_event is InputEventWithModifiers:
 		_load_property(event, new_event, &"ctrl_pressed")
@@ -189,6 +205,10 @@ static func _load_event(event: Dictionary) -> InputEvent:
 			_load_property(event, new_event, &"keycode")
 			_load_property(event, new_event, &"physical_keycode")
 			_load_property(event, new_event, &"unicode")
+		
+		if new_event is InputEventMouseButton:
+			_load_property(event, new_event, &"button_index")
+			
 	
 	return new_event
 
