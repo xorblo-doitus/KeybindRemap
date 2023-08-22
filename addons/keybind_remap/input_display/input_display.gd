@@ -2,6 +2,13 @@ extends HBoxContainer
 class_name InputDisplay
 
 
+## A scene displaying more information about an [InputEvent] then [InputIcon]
+##
+## Displays modifiers (shift, alt, ctrl, and super), says if physical, and can
+## say which physical key it corresponds to.
+
+
+## See [member InputIcon.input_idx].
 @export var input_idx: int:
 	set(new):
 		if input_icon: _set_input_idx(new)
@@ -11,6 +18,7 @@ class_name InputDisplay
 		else: return 0
 func _set_input_idx(new: int) -> void:
 	input_icon.input_idx = new
+## The action this displays.
 @export var action_name: StringName:
 	set(new):
 		if input_icon: _set_action_name(new)
@@ -20,6 +28,7 @@ func _set_input_idx(new: int) -> void:
 		else: return &""
 func _set_action_name(new: StringName) -> void:
 	input_icon.action_name = new
+## See [member InputIcon.input_event]
 @export var input_event: InputEvent:
 	set(new):
 		if input_icon: _set_input_event(new)
@@ -29,8 +38,10 @@ func _set_action_name(new: StringName) -> void:
 		else: return null
 func _set_input_event(new: InputEvent) -> void:
 	input_icon.input_event = new
-	
+
+## Style box drown around this when focused.
 @export var focus_style_box: StyleBox
+## Modulate for the physical icon [TextureRect]
 @export var physical_icon_modulate: Color = Color(1, 1, 1, 0.75):
 	set(new):
 		physical_icon_modulate = new
@@ -54,13 +65,17 @@ func _update_physical_icon_modulate() -> void:
 @onready var true_key: HBoxContainer = $TrueKey
 
 
+## Displays the given [param event]
 func adapt_to(event: InputEvent) -> void:
 	if input_icon.texture == InputIcon.blank:
 		display_fallback(event)
 	else:
 		display(event)
-	
 
+
+## Display an event when icon exists.
+## [br][br]
+## [b]Note: [/b]Prefer using [method adapt_to]
 func display(event: InputEvent) -> void:
 	input_icon.show()
 	fallback_label.hide()
@@ -93,7 +108,7 @@ func display(event: InputEvent) -> void:
 				new_label.text = "("
 				true_key.add_child(new_label)
 				
-				var true_key_display: InputIcon = InputIcon.new()
+				var true_key_display:  = InputIcon.new()
 				true_key_display.input_event = true_event
 				
 				true_key.add_child(true_key_display)
@@ -105,6 +120,9 @@ func display(event: InputEvent) -> void:
 	modifiers.visible = modifiers.get_child_count()
 
 
+## Display an event when icon does not exist.
+## [br][br]
+## [b]Note: [/b]Prefer using [method adapt_to]
 func display_fallback(event: InputEvent) -> void:
 	_clear_children(true_key)
 	_clear_children(modifiers)

@@ -2,9 +2,19 @@ extends Popup
 class_name InputChooser
 
 
+## A GUI to choose an [InputEvent]
+##
+## Does not change event own it's own. But rather emit [signal choosed] when
+## event has been selected.
+## You can build a custom scene, taking exemple of
+## [code]res://addons/keybind_remap/input_chooser/default_input_chooser.tscn[/code].
+
+
+## Emitted when [method close] has been called with [code]success=true[/code].
 signal choosed(new_event: InputEvent)
 
 
+## When building a custom chooser scene, set this so it knows wich node to use.
 @export var input_display: InputDisplay:
 	set(new):
 		if input_display and input_display.gui_input.is_connected(_on_input_display_gui_input):
@@ -12,6 +22,7 @@ signal choosed(new_event: InputEvent)
 		input_display = new
 		if input_display:
 			input_display.gui_input.connect(_on_input_display_gui_input)
+## When building a custom chooser scene, set this so it knows wich node to use.
 @export var confirm_button: Button:
 	set(new):
 		if confirm_button and confirm_button.pressed.is_connected(_on_confirm_button_pressed):
@@ -19,6 +30,7 @@ signal choosed(new_event: InputEvent)
 		confirm_button = new
 		if confirm_button:
 			confirm_button.pressed.connect(_on_confirm_button_pressed)
+## When building a custom chooser scene, set this so it knows wich node to use.
 @export var cancel_button: Button:
 	set(new):
 		if cancel_button and cancel_button.pressed.is_connected(_on_cancel_button_pressed):
@@ -26,6 +38,7 @@ signal choosed(new_event: InputEvent)
 		cancel_button = new
 		if cancel_button:
 			cancel_button.pressed.connect(_on_cancel_button_pressed)
+## When building a custom chooser scene, set this so it knows wich node to use.
 @export var physical_toggle: Button:
 	set(new):
 		if physical_toggle and physical_toggle.toggled.is_connected(_on_physical_toggle_toggled):
@@ -43,6 +56,9 @@ func _init() -> void:
 	popup_hide.connect(_on_popup_hide)
 
 
+## Request a remap for the given [param event]. Will not modify [param event] instance.
+## Make sure to connect to [signal choosed] with [constant Object.CONNECT_ONE_SHOT]
+## in order to trigger your event changing logic.
 func request_remap(event: InputEvent) -> bool:
 	if _available:
 		_remap(event)
@@ -90,6 +106,9 @@ func _on_physical_toggle_toggled() -> void:
 		_force_refresh()
 
 
+## Close Window.
+## [br] If [param success] is [code]true[/code] will modify the event,
+## else will cancel modification.
 func close(success: bool) -> void:
 	_available = true
 	hide()
@@ -113,5 +132,6 @@ func _force_refresh() -> void:
 	input_display.input_icon.force_refresh()
 
 
+## Get the current, unfinal, result.
 func fetch_result() -> InputEvent:
 	return _setup_physical(input_display.input_event)

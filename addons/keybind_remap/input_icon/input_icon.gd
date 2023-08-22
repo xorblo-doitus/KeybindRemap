@@ -2,9 +2,16 @@ extends "res://addons/ActionIcon/ActionIcon.gd"
 class_name InputIcon
 
 
+## An icon that succinctly displays an [InputEvent]
+##
+## Just a bit modified from ["addons/ActionIcon/ActionIcon.gd"]
+
+
+## Key texture without character on it, used as display in editor.
 const blank = preload("res://addons/ActionIcon/Keyboard/Blank.png")
 
 
+## Emitted when [method _refresh] has ended.
 signal input_changed(input_event: InputEvent)
 
 
@@ -15,6 +22,8 @@ signal input_changed(input_event: InputEvent)
 			return
 		input_idx = new
 		refresh()
+## If [code]null[/code], will be fetched trough [method fetch_input_event].
+## Else, will display the given event.
 @export var input_event: InputEvent:
 	set(new):
 		if new == input_event:
@@ -37,12 +46,13 @@ func _init() -> void:
 	_base_path = "res://addons/ActionIcon/"
 
 
+## Refresh, even if not visible in tree.
 func force_refresh() -> void:
 	_forced_refresh = true
 	refresh()
 
 
-## modified from [res://addons/ActionIcon/ActionIcon.gd] to let
+## modified from [res://addons/ActionIcon/ActionIcon.gd] to let [member input_event] do it's job.
 func _refresh() -> void:
 	_pending_refresh = false
 	
@@ -76,12 +86,14 @@ func _refresh() -> void:
 	input_changed.emit(event)
 
 
-
-
+## Get event from [InputMap] with [member "addons/ActionIcon/ActionIcon.gd".action_name] and [member input_idx].
+## Returns [code]null[/code] if none is found.
 func fetch_input_event() -> InputEvent:
 	return _get_input_event_from_idx(action_name, input_idx)
 
 
+## Get event from [InputMap] with given [param action_name] and [param input_idx].
+## Returns [code]null[/code] if none is found.
 static func _get_input_event_from_idx(action_name: StringName, input_idx: int) -> InputEvent:
 	if action_name == &"":
 		return null

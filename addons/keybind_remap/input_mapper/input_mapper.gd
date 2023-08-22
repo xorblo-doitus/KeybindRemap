@@ -2,10 +2,18 @@ extends InputDisplay
 class_name InputMapper
 
 
+## Simple way to remap an [InputEvent]
+##
+## Can hold it's own event or be linked to [InputMap] if [member Display.action_name]
+## and [member Display.input_idx] are valid.
+## Invoke [member input_chooser] when clicked to remap it's event.
+
+
+## Use this static variable to globally override the default [InputChosser] used by all [InputMapper]s
 static var _default_input_chooser: InputChooser
 
 
-
+## The [InputChooser] node used by this. Use [member _default_input_chooser] if [code]null[/code]
 @export var input_chooser: InputChooser:
 	get:
 		if input_chooser == null:
