@@ -138,6 +138,7 @@ static  func _save_event(event: InputEvent) -> Dictionary:
 		_save_property(saved_event, event, &"shift_pressed", false)
 		_save_property(saved_event, event, &"meta_pressed", false)
 		_save_property(saved_event, event, &"command_or_control_autoremap", false)
+		
 		if event is InputEventKey:
 			saved_event[&"class"] = &"InputEventKey"
 			_save_property(saved_event, event, &"keycode", 0)
@@ -148,6 +149,14 @@ static  func _save_event(event: InputEvent) -> Dictionary:
 			saved_event[&"class"] = &"InputEventMouseButton"
 			_save_property(saved_event, event, &"button_index", 0)
 			
+	elif event is InputEventJoypadButton:
+		saved_event[&"class"] = &"InputEventJoypadButton"
+		_save_property(saved_event, event, &"button_index", 0)
+		
+	elif event is InputEventJoypadMotion:
+		saved_event[&"class"] = &"InputEventJoypadMotion"
+		_save_property(saved_event, event, &"axis", 0)
+		
 		
 	return saved_event
 
@@ -194,6 +203,8 @@ static func _load_event(event: Dictionary) -> InputEvent:
 	match event["class"]:
 		&"InputEventKey": new_event = InputEventKey.new()
 		&"InputEventMouseButton": new_event = InputEventMouseButton.new()
+		&"InputEventJoypadButton": new_event = InputEventJoypadButton.new()
+		&"InputEventJoypadMotion": new_event = InputEventJoypadMotion.new()
 	
 	if new_event is InputEventWithModifiers:
 		_load_property(event, new_event, &"ctrl_pressed")
@@ -208,7 +219,12 @@ static func _load_event(event: Dictionary) -> InputEvent:
 		
 		if new_event is InputEventMouseButton:
 			_load_property(event, new_event, &"button_index")
-			
+	
+	elif new_event is InputEventJoypadButton:
+		_load_property(event, new_event, &"button_index")
+	
+	elif new_event is InputEventJoypadMotion:
+		_load_property(event, new_event, &"axis")
 	
 	return new_event
 
