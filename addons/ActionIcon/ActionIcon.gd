@@ -479,5 +479,5 @@ func _input(event: InputEvent) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_VISIBILITY_CHANGED:
-		if is_visible_in_tree() and not _pending_refresh:
+		if is_visible_in_tree() and _pending_refresh:
 			_refresh()
