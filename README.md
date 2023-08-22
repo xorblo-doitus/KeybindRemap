@@ -1,4 +1,4 @@
-# KeybindRemap (Unfinished)
+# KeybindRemap
 
 Utility scenes to help remapping keybinds.
 
@@ -13,6 +13,11 @@ Action Icon is not necessary)
 ## Godot version
 
 Godot 4.1.1, may not work with 4.0, wont work with 3.x
+
+
+## Development Status
+
+Mostly complete. Some improvements are still possible.
 
 
 ## Credits:
