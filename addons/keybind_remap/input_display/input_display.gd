@@ -40,11 +40,18 @@ func _set_input_event(new: InputEvent) -> void:
 			_update_physical_icon_modulate.call_deferred()
 func _update_physical_icon_modulate() -> void:
 	physical_icon.modulate = physical_icon_modulate
+## When key is physical, displays the letter that the player see on it's keyboard.
+@export var display_true_key: bool = true:
+	set(new):
+		if new != display_true_key:
+			display_true_key = new
+			adapt_to(input_icon.input_event)
 
 @onready var input_icon: InputIcon = $InputIcon
 @onready var fallback_label: Label = $FallbackLabel
 @onready var modifiers: HBoxContainer = $Modifiers
 @onready var physical_icon: TextureRect = $InputIcon/PhysicalIcon
+@onready var true_key: HBoxContainer = $TrueKey
 
 
 func adapt_to(event: InputEvent) -> void:
@@ -58,9 +65,8 @@ func display(event: InputEvent) -> void:
 	input_icon.show()
 	fallback_label.hide()
 	
-	for child in modifiers.get_children():
-		child.queue_free()
-		modifiers.remove_child(child)
+	_clear_children(modifiers)
+	_clear_children(true_key)
 	
 	if event is InputEventWithModifiers:
 		if event.ctrl_pressed:
@@ -73,10 +79,35 @@ func display(event: InputEvent) -> void:
 			_new_modifier_texture_rect().texture = preload("res://addons/ActionIcon/Keyboard/Command.png")
 	
 	physical_icon.visible = event is InputEventKey and event.keycode == 0 and event.physical_keycode != 0
+	if display_true_key and physical_icon.visible:
+		var true_keycode: int = DisplayServer.keyboard_get_keycode_from_physical(event.physical_keycode)
+		if true_keycode != event.physical_keycode:
+			var true_event: InputEventKey = InputEventKey.new()
+			true_event.keycode = true_keycode
+			if input_icon.get_keyboard(true_keycode) == null:
+				var new_label: Label = Label.new()
+				new_label.text = "(%s)" % true_event.as_text()
+				true_key.add_child(new_label)
+			else:
+				var new_label: Label = Label.new()
+				new_label.text = "("
+				true_key.add_child(new_label)
+				
+				var true_key_display: InputIcon = InputIcon.new()
+				true_key_display.input_event = true_event
+				
+				true_key.add_child(true_key_display)
+				
+				new_label = Label.new()
+				new_label.text = ")"
+				true_key.add_child(new_label)
+	
 	modifiers.visible = modifiers.get_child_count()
 
 
 func display_fallback(event: InputEvent) -> void:
+	_clear_children(true_key)
+	_clear_children(modifiers)
 	input_icon.hide()
 	modifiers.hide()
 	fallback_label.show()
@@ -97,7 +128,7 @@ func _new_modifier_texture_rect() -> TextureRect:
 	modifiers.add_child(new_plus_label)
 	
 	return new
-		
+
 
 func _draw() -> void:
 	if has_focus():
@@ -107,6 +138,12 @@ func _draw() -> void:
 
 func _on_focus_entered() -> void:
 	_set_focus(true)
+
+
+static func _clear_children(_node: Node) -> void:
+	for child in _node.get_children():
+		child.queue_free()
+		_node.remove_child(child)
 
 
 func _on_focus_exited() -> void:

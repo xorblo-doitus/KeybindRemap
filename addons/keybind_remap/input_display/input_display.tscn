@@ -47,6 +47,9 @@ tooltip_text = "PHYSICAL_TOOLTIP"
 texture = ExtResource("3_82u8x")
 expand_mode = 1
 
+[node name="TrueKey" type="HBoxContainer" parent="."]
+layout_mode = 2
+
 [node name="FallbackLabel" type="Label" parent="."]
 layout_mode = 2
 
