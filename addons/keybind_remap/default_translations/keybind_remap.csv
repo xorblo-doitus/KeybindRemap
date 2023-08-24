@@ -5,3 +5,5 @@ OK,Ok,Ok
 OK_TOOLTIP,Save modifications.,Sauvegarder les modifications.
 CANCEL,Cancel,Annuler
 CANCEL_TOOLTIP,Cancel modifications.,Annuler les modifications.
+RESET_KEYBIND,​Reset,​Réinitialiser
+RESET_KEYBIND_TOOLTIP,Revert this keybind to it's default.,Réinitialise ce raccourci.

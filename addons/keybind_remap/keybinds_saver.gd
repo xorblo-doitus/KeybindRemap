@@ -114,13 +114,13 @@ static func set_action_as_modified(action: StringName) -> void:
 		modified_actions.push_back(action)
 
 
-## Remove [param action] from modified actions, usefull if you reverted it back to default.
+## Remove [param action] from modified actions, usefull if you reseted it back to default.
 static func set_action_as_unmodified(action: StringName) -> void:
 	modified_actions.erase(action)
 
 
 ## The current [InputMap]'s keybinds will be set as the default ones.
-## Call [method revert] or [method revert_all] to load default actions.
+## Call [method reset] or [method reset_all] to load default actions.
 ## [br][br]
 ## It's a good idea to call this before loading any keybinds file.
 static func set_current_mapping_as_default() -> void:
@@ -135,8 +135,8 @@ static func set_current_mapping_as_default() -> void:
 		_default_actions[action] = events
 
 
-## Revert an action back to it's orginal keybinds. See [method set_current_mapping_as_default]
-static func revert(action: StringName) -> void:
+## Reset an action back to it's orginal keybinds. See [method set_current_mapping_as_default]
+static func reset(action: StringName) -> void:
 	if action not in _default_actions:
 		return
 	
@@ -147,10 +147,20 @@ static func revert(action: StringName) -> void:
 		InputMap.action_add_event(action, event.duplicate())
 
 
-## Call [method revert] for all actions that have defaults. See [method set_current_mapping_as_default]
-static func revert_all() -> void:
+## Call [method reset] for all actions that have defaults. See [method set_current_mapping_as_default]
+static func reset_all() -> void:
 	for action in _default_actions:
-		revert(action)
+		reset(action)
+
+
+static func get_default_event(action: StringName, idx: int) -> InputEvent:
+	var events: Array[InputEvent] = []
+	events = _default_actions.get(action, events) # Workaround for typed event creation
+	
+	if -len(events) > idx or idx >= len(events):
+		return null
+	
+	return events[idx]
 
 
 ## Save all keybinds that where modified to a file. Make sur to call [method set_action_as_modified]

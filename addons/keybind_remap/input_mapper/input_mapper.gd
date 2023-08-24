@@ -20,6 +20,74 @@ static var _default_input_chooser: InputChooser
 			return _get_default_input_chooser()
 		
 		return input_chooser
+## If null, will fetch default input from [KeybindsSaver]
+@export var default_input: InputEvent:
+	get:
+		if default_input != null:
+			return default_input
+		
+		return KeybindsSaver.get_default_event(action_name, input_idx)
+## RESET_KEYBIND for default translation, tough default text is empty to display only the icon
+@export var reset_button_text: String:
+	set(new):
+		if reset_button_text: _set_reset_button_text(new)
+		else: _set_reset_button_text.call_deferred(new)
+func _set_reset_button_text(new: String) -> void:
+	reset_button.text = new
+
+
+@onready var reset_button: Button = $Reset
+
+
+func _ready() -> void:
+	_get_default_input_chooser.call_deferred()
+
+
+func adapt_to(event: InputEvent) -> void:
+	super(event)
+	update_reset_button_visiblity()
+
+
+func choose(event: InputEvent, is_default: bool = false) -> void:
+	if event == null:
+		return
+	
+	if input_icon.fetch_input_event() == null:
+		input_event = event
+	
+	if Engine.is_editor_hint() or !InputMap.has_action(action_name):
+		return
+	
+	var events: Array[InputEvent] = InputMap.action_get_events(action_name)
+	if -len(events) > input_idx or input_idx >= len(events):
+		return
+	
+	events[input_idx] = event
+	
+	InputMap.action_erase_events(action_name)
+	for action_event in events:
+		InputMap.action_add_event(action_name, action_event)
+	
+	if not is_default:
+		KeybindsSaver.set_action_as_modified(action_name)
+	
+	if is_inside_tree():
+		get_tree().call_group(&"action_icons", &"refresh")
+	elif input_chooser.is_inside_tree():
+		input_chooser.get_tree().call_group(&"action_icons", &"refresh")
+	
+	KeybindsSaver.save_keybinds()
+
+
+func reset() -> void:
+	KeybindsSaver.set_action_as_unmodified(action_name)
+	
+	if default_input != null:
+		choose(default_input, true)
+
+
+func update_reset_button_visiblity() -> void:
+	reset_button.visible = default_input != null and not default_input.is_match(input_event)
 
 
 var _pressed: bool = false
@@ -42,41 +110,13 @@ func _is_click(event: InputEvent) -> bool:
 
 func _get_default_input_chooser() -> InputChooser:
 	if _default_input_chooser == null or not is_instance_valid(_default_input_chooser):
-		print("create mapper gui")
-		_default_input_chooser = preload("res://addons/keybind_remap/input_chooser/default_input_chooser.tscn").instantiate()
-		get_tree().root.add_child(_default_input_chooser)
+		_default_input_chooser = load("res://addons/keybind_remap/input_chooser/default_input_chooser.tscn").instantiate()
+		_default_input_chooser.hide()
+		get_tree().root.add_child.call_deferred(_default_input_chooser)
 	return _default_input_chooser
 
 
 func _on_choosed(event: InputEvent) -> void:
-	if event == null:
-		return
-	
-	if input_icon.fetch_input_event() == null:
-		input_event = event
-	
-	if Engine.is_editor_hint() or !InputMap.has_action(action_name):
-		return
-	
-	var events: Array[InputEvent] = InputMap.action_get_events(action_name)
-	if -len(events) > input_idx or input_idx >= len(events):
-		return
-	
-	events[input_idx] = event
-	
-	InputMap.action_erase_events(action_name)
-	for action_event in events:
-		InputMap.action_add_event(action_name, action_event)
-	
-	KeybindsSaver.set_action_as_modified(action_name)
-	
-	if is_inside_tree():
-		get_tree().call_group(&"action_icons", &"refresh")
-	elif input_chooser.is_inside_tree():
-		input_chooser.get_tree().call_group(&"action_icons", &"refresh")
-	
-	KeybindsSaver.save_keybinds()
-	
-	
+	choose(event)
 
 

@@ -56,7 +56,7 @@ func force_refresh() -> void:
 func _refresh() -> void:
 	_pending_refresh = false
 	
-	if Engine.is_editor_hint() or (not is_visible_in_tree() and not _forced_refresh):
+	if Engine.is_editor_hint() or (not _is_truely_visible_in_tree() and not _forced_refresh):
 		return
 	
 	_forced_refresh = false
@@ -84,6 +84,16 @@ func _refresh() -> void:
 		texture = blank
 		
 	input_changed.emit(event)
+
+
+func _is_truely_visible_in_tree() -> bool:
+	if is_visible_in_tree():
+		return true
+	
+	if get_parent() is InputDisplay:
+		return get_parent().is_visible_in_tree()
+	
+	return false
 
 
 ## Get event from [InputMap] with [member "addons/ActionIcon/ActionIcon.gd".action_name] and [member input_idx].
