@@ -23,7 +23,7 @@ signal choosed(new_event: InputEvent)
 		if input_display:
 			input_display.gui_input.connect(_on_input_display_gui_input)
 ## When building a custom chooser scene, set this so it knows wich node to use.
-@export var confirm_button: Button:
+@export var confirm_button: BaseButton:
 	set(new):
 		if confirm_button and confirm_button.pressed.is_connected(_on_confirm_button_pressed):
 			confirm_button.pressed.disconnect(_on_confirm_button_pressed)
@@ -31,7 +31,7 @@ signal choosed(new_event: InputEvent)
 		if confirm_button:
 			confirm_button.pressed.connect(_on_confirm_button_pressed)
 ## When building a custom chooser scene, set this so it knows wich node to use.
-@export var cancel_button: Button:
+@export var cancel_button: BaseButton:
 	set(new):
 		if cancel_button and cancel_button.pressed.is_connected(_on_cancel_button_pressed):
 			cancel_button.pressed.disconnect(_on_cancel_button_pressed)
@@ -39,7 +39,7 @@ signal choosed(new_event: InputEvent)
 		if cancel_button:
 			cancel_button.pressed.connect(_on_cancel_button_pressed)
 ## When building a custom chooser scene, set this so it knows wich node to use.
-@export var physical_toggle: Button:
+@export var physical_toggle: BaseButton:
 	set(new):
 		if physical_toggle and physical_toggle.toggled.is_connected(_on_physical_toggle_toggled):
 			physical_toggle.toggled.disconnect(_on_physical_toggle_toggled)
