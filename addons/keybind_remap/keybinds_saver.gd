@@ -4,6 +4,9 @@ class_name KeybindsSaver
 
 ## This static class let save keybinds trough JSON
 ##
+## You should call [method set_current_mapping_as_default] before loading or modifying
+## any keybind.
+## [br][br]
 ## Why JSON?
 ## [br][br]
 ## This is using JSON over Godot's serialization to let players share their keybinds
@@ -89,14 +92,76 @@ const built_in_actions: Array[StringName] = [
 	&"ui_swap_input_direction",
 ]
 
+
+## Default ignored action when calling [method save_keybinds].
 static var default_ignored_actions: Array[StringName] = built_in_actions
+## Default save file path when calling [method save_keybinds].
 static var default_path: String = "user://keybinds/custom.json"
 
+## If true, only actions that where modified will be saved. Make sure to call
+## [method set_action_as_modified] when modifying an action.
+static var only_save_modified_actions: bool = true
+## Actions that where marked as modified.
+static var modified_actions: Array[StringName] = []
+
+
+static var _default_actions: Dictionary = {}
+
+
+## Set an action as modified, so it will be saved in case [member only_save_modified_actions] is true.
+static func set_action_as_modified(action: StringName) -> void:
+	if action not in modified_actions:
+		modified_actions.push_back(action)
+
+
+## Remove [param action] from modified actions, usefull if you reverted it back to default.
+static func set_action_as_unmodified(action: StringName) -> void:
+	modified_actions.erase(action)
+
+
+## The current [InputMap]'s keybinds will be set as the default ones.
+## Call [method revert] or [method revert_all] to load default actions.
+## [br][br]
+## It's a good idea to call this before loading any keybinds file.
+static func set_current_mapping_as_default() -> void:
+	_default_actions.clear()
+	
+	for action in InputMap.get_actions():
+		var events: Array[InputEvent] = []
+		
+		for event in InputMap.action_get_events(action):
+			events.push_back(event.duplicate())
+		
+		_default_actions[action] = events
+
+
+## Revert an action back to it's orginal keybinds. See [method set_current_mapping_as_default]
+static func revert(action: StringName) -> void:
+	if action not in _default_actions:
+		return
+	
+	set_action_as_unmodified(action)
+	
+	InputMap.action_erase_events(action)
+	for event in _default_actions[action]:
+		InputMap.action_add_event(action, event.duplicate())
+
+
+## Call [method revert] for all actions that have defaults. See [method set_current_mapping_as_default]
+static func revert_all() -> void:
+	for action in _default_actions:
+		revert(action)
+
+
+## Save all keybinds that where modified to a file. Make sur to call [method set_action_as_modified]
+## or to set
 static func save_keybinds(path: String = default_path, ignored_actions: Array[StringName] = default_ignored_actions) -> void:
 	var data: Dictionary = {}
 	
 	for action in InputMap.get_actions():
-		if action not in ignored_actions:
+		if (
+			not only_save_modified_actions or action in modified_actions
+		) and action not in ignored_actions:
 			data[action] = _save_action(action)
 	
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
@@ -166,6 +231,7 @@ static func _save_property(save: Dictionary, _object: Object, property: StringNa
 		save[property] = _object.get(property)
 
 
+## Load keybinds from a file.
 static func load_keybinds(path: String = default_path) -> void:
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	if FileAccess.get_open_error():
@@ -195,6 +261,9 @@ static func _load_action(action: StringName, data: Array) -> void:
 			InputMap.action_set_deadzone(action, event.get(&"dead_zone", 0.5))
 		else:
 			InputMap.action_add_event(action, _load_event(event))
+	
+	if action not in modified_actions:
+		modified_actions.push_back(action)
 
 
 static func _load_event(event: Dictionary) -> InputEvent:
@@ -232,6 +301,7 @@ static func _load_event(event: Dictionary) -> InputEvent:
 static func _load_property(save: Dictionary, _object: Object, property: StringName) -> void:
 	if save.has(property): # Could not be included if default
 		_object.set(property, save[property])
+
 
 static func _print_file_error(path: String) -> void:
 	push_error("Error saving keybinds at {2} due to file opening error n°{0}: {1}".format([

@@ -68,6 +68,8 @@ func _on_choosed(event: InputEvent) -> void:
 	for action_event in events:
 		InputMap.action_add_event(action_name, action_event)
 	
+	KeybindsSaver.set_action_as_modified(action_name)
+	
 	if is_inside_tree():
 		get_tree().call_group(&"action_icons", &"refresh")
 	elif input_chooser.is_inside_tree():

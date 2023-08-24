@@ -7,6 +7,7 @@ func _ready() -> void:
 #	print(InputMap.get_actions())
 #	OS.open_midi_inputs()
 #	print(OS.get_connected_midi_inputs())
+	KeybindsSaver.set_current_mapping_as_default()
 	KeybindsSaver.load_keybinds()
 
 
