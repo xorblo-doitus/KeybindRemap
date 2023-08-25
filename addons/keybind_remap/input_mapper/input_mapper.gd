@@ -39,8 +39,8 @@ func _set_reset_button_text(new: String) -> void:
 @onready var reset_button: Button = $Reset
 
 
-func _ready() -> void:
-	_get_default_input_chooser.call_deferred()
+#func _ready() -> void:
+#	_get_default_input_chooser.call_deferred()
 
 
 func adapt_to(event: InputEvent) -> void:
@@ -90,6 +90,12 @@ func update_reset_button_visiblity() -> void:
 	reset_button.visible = default_input != null and not default_input.is_match(input_event)
 
 
+static func instantiate_default_input_chooser() -> InputChooser:
+	var instance: InputChooser = load("res://addons/keybind_remap/input_chooser/default_input_chooser.tscn").instantiate()
+	instance.hide()
+	return instance
+
+
 var _pressed: bool = false
 func _gui_input(event: InputEvent) -> void:
 	if _is_click(event):
@@ -110,9 +116,11 @@ func _is_click(event: InputEvent) -> bool:
 
 func _get_default_input_chooser() -> InputChooser:
 	if _default_input_chooser == null or not is_instance_valid(_default_input_chooser):
-		_default_input_chooser = load("res://addons/keybind_remap/input_chooser/default_input_chooser.tscn").instantiate()
-		_default_input_chooser.hide()
-		get_tree().root.add_child.call_deferred(_default_input_chooser)
+		if is_inside_tree():
+			_default_input_chooser = instantiate_default_input_chooser()
+			get_tree().root.add_child(_default_input_chooser)
+		else:
+			push_error("Input chooser is not set, default one nor, and this node is not inside the tree, so it can't create one.")
 	return _default_input_chooser
 
 
