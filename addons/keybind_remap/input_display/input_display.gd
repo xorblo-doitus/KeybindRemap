@@ -11,33 +11,27 @@ class_name InputDisplay
 ## See [member InputIcon.input_idx].
 @export var input_idx: int:
 	set(new):
-		if input_icon: _set_input_idx(new)
-		else: _set_input_idx.call_deferred(new)
+		if input_icon: input_icon.input_idx = new
+		else: _ready_sets[&"input_idx"] = new
 	get:
 		if input_icon: return input_icon.input_idx
 		else: return 0
-func _set_input_idx(new: int) -> void:
-	input_icon.input_idx = new
 ## The action this displays.
 @export var action_name: StringName:
 	set(new):
-		if input_icon: _set_action_name(new)
-		else: _set_action_name.call_deferred(new)
+		if input_icon: input_icon.action_name = new
+		else: _ready_sets[&"action_name"] = new
 	get:
 		if input_icon: return input_icon.action_name
 		else: return &""
-func _set_action_name(new: StringName) -> void:
-	input_icon.action_name = new
 ## See [member InputIcon.input_event]
 @export var input_event: InputEvent:
 	set(new):
-		if input_icon: _set_input_event(new)
-		else: _set_input_event.call_deferred(new)
+		if input_icon: input_icon.input_event = new
+		else: _ready_sets[&"input_event"] = new
 	get:
 		if input_icon: return input_icon.input_event
 		else: return null
-func _set_input_event(new: InputEvent) -> void:
-	input_icon.input_event = new
 
 ## Style box drown around this when focused.
 @export var focus_style_box: StyleBox
@@ -45,12 +39,8 @@ func _set_input_event(new: InputEvent) -> void:
 @export var physical_icon_modulate: Color = Color(1, 1, 1, 0.75):
 	set(new):
 		physical_icon_modulate = new
-		if physical_icon:
-			_update_physical_icon_modulate()
-		else:
-			_update_physical_icon_modulate.call_deferred()
-func _update_physical_icon_modulate() -> void:
-	physical_icon.modulate = physical_icon_modulate
+		if physical_icon: physical_icon.modulate = physical_icon_modulate
+		else: _ready_sets[&"physical_icon_modulate"] = new
 ## When key is physical, displays the letter that the player see on it's keyboard.
 @export var display_true_key: bool = true:
 	set(new):
@@ -63,6 +53,14 @@ func _update_physical_icon_modulate() -> void:
 @onready var modifiers: HBoxContainer = $Modifiers
 @onready var physical_icon: TextureRect = $InputIcon/PhysicalIcon
 @onready var true_key: HBoxContainer = $TrueKey
+
+
+# property_name: StringName → value: Variant
+var _ready_sets: Dictionary = {}
+func _ready() -> void:
+	for property_name in _ready_sets:
+		set(property_name, _ready_sets[property_name])
+	_ready_sets.clear()
 
 
 ## Displays the given [param event]

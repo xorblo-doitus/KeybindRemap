@@ -30,17 +30,11 @@ static var _default_input_chooser: InputChooser
 ## RESET_KEYBIND for default translation, tough default text is empty to display only the icon
 @export var reset_button_text: String:
 	set(new):
-		if reset_button_text: _set_reset_button_text(new)
-		else: _set_reset_button_text.call_deferred(new)
-func _set_reset_button_text(new: String) -> void:
-	reset_button.text = new
+		if reset_button_text: reset_button.text = new
+		else: _ready_sets[&"reset_button_text"] = new
 
 
 @onready var reset_button: Button = $Reset
-
-
-#func _ready() -> void:
-#	_get_default_input_chooser.call_deferred()
 
 
 func adapt_to(event: InputEvent) -> void:
@@ -126,5 +120,3 @@ func _get_default_input_chooser() -> InputChooser:
 
 func _on_choosed(event: InputEvent) -> void:
 	choose(event)
-
-
