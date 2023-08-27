@@ -30,7 +30,7 @@ static var _default_input_chooser: InputChooser
 ## RESET_KEYBIND for default translation, tough default text is empty to display only the icon
 @export var reset_button_text: String:
 	set(new):
-		if reset_button_text: reset_button.text = new
+		if reset_button: reset_button.text = new
 		else: _ready_sets[&"reset_button_text"] = new
 
 

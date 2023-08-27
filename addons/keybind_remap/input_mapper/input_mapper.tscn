@@ -17,7 +17,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 tooltip_text = "RESET_KEYBIND_TOOLTIP"
-text = "RESET_KEYBIND"
 icon = ExtResource("3_77orr")
 
 [connection signal="pressed" from="Reset" to="." method="reset"]
