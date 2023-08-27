@@ -35,7 +35,7 @@ test={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://addons/keybind_remap/default_translations/keybind_remap.en.translation", "res://addons/keybind_remap/default_translations/keybind_remap.fr.translation")
+locale/translations=PackedStringArray("res://addons/keybind_remap/translations/keybind_remap.en.translation", "res://addons/keybind_remap/translations/keybind_remap.fr.translation")
 
 [rendering]
 

@@ -10,6 +10,11 @@ then enable the addon in `Project → Project Settings → Plugins`. (Enabling
 Action Icon is not necessary)
 
 
+## Localization
+
+Default translations can be found in `res://addons/keybind_remap/translations`
+
+
 ## Godot version
 
 Godot 4.1.1, may not work with 4.0, wont work with 3.x
