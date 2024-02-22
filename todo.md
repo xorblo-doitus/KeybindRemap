@@ -1,0 +1,2 @@
+- [ ] Refactor saving using the same system as in Bloc-Notes++
+- [ ] Add a way to temporary change keybinds.
