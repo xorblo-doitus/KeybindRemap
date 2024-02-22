@@ -23,7 +23,13 @@ window/size/viewport_height=200
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/ActionIcon/plugin.cfg")
+enabled=PackedStringArray("res://addons/ActionIcon/plugin.cfg", "res://addons/gut/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://test/": "blue"
+}
 
 [input]
 
