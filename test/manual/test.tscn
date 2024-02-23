@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://clmbsaea2c3wa"]
+[gd_scene load_steps=8 format=3 uid="uid://clmbsaea2c3wa"]
 
 [ext_resource type="Script" path="res://test/manual/test.gd" id="1_d5fq3"]
 [ext_resource type="Texture2D" uid="uid://clklp7l0gqcje" path="res://addons/ActionIcon/Keyboard/Blank.png" id="1_k05vh"]
@@ -13,6 +13,16 @@ script/source = "extends Node
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		print(\"_input: \", event)
+"
+
+[sub_resource type="GDScript" id="GDScript_pgelc"]
+script/source = "extends Button
+
+
+
+
+func _on_pressed() -> void:
+	ProjectSettings.save_custom(\"override.cfg\")
 "
 
 [node name="Control" type="Control"]
@@ -55,3 +65,20 @@ focus_style_box = null
 
 [node name="Node" type="Node" parent="."]
 script = SubResource("GDScript_ma6oa")
+
+[node name="SaveSettings" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -8.0
+grow_horizontal = 0
+grow_vertical = 0
+tooltip_text = "Use this to verify there is no conflict when saving settings."
+text = "Save settings (not keybinds)"
+script = SubResource("GDScript_pgelc")
+
+[connection signal="pressed" from="SaveSettings" to="SaveSettings" method="_on_pressed"]
