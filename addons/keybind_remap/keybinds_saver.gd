@@ -163,16 +163,34 @@ static func get_default_event(action: StringName, idx: int) -> InputEvent:
 	return events[idx]
 
 
-## Save all keybinds that where modified to a file. Make sur to call [method set_action_as_modified]
-## or to set
+## Save keybinds to a file. 
+## If [member only_save_modified_actions] is true: Make sur to call [method set_action_as_modified].
 static func save_keybinds(path: String = default_path, ignored_actions: Array[StringName] = default_ignored_actions) -> void:
 	var data: Dictionary = {}
+	var current_actions := InputMap.get_actions()
 	
-	for action in InputMap.get_actions():
-		if (
-			not only_save_modified_actions or action in modified_actions
-		) and action not in ignored_actions:
-			data[action] = _save_action(action)
+	for action in current_actions:
+		if action in ignored_actions:
+			continue
+		
+		if only_save_modified_actions:
+			var was_modified: bool = false
+			
+			if action in modified_actions:
+				was_modified = true
+			
+			if not action in _default_actions:
+				was_modified = true
+				
+			if not was_modified:
+				continue
+		
+		data[action] = _save_action(action)
+	
+	## Was trying to add a way to save that an action was erased.
+	#for action in _default_actions:
+		#if not action in current_actions:
+			#data[action] = []
 	
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
