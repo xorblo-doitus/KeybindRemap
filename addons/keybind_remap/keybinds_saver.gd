@@ -283,8 +283,8 @@ static func load_keybinds(path: String = default_path) -> void:
 
 
 static func _load_input_map(saved_input_map: Dictionary) -> void:
-	InputMap.load_from_project_settings()
-	modified_actions.clear()
+	KeybindsSaver.reset_all()
+	
 	for action in saved_input_map:
 		_load_action(action, saved_input_map[action])
 
