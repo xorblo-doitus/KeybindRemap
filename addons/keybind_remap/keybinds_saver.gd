@@ -166,7 +166,21 @@ static func get_default_event(action: StringName, idx: int) -> InputEvent:
 ## Save keybinds to a file. 
 ## If [member only_save_modified_actions] is true: Make sur to call [method set_action_as_modified].
 static func save_keybinds(path: String = default_path, ignored_actions: Array[StringName] = default_ignored_actions) -> void:
-	var data: Dictionary = {}
+	var saved_input_map := _save_input_map(ignored_actions)
+	
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
+	
+	if file == null:
+		_print_file_error(path)
+		return
+	
+	file.store_string(JSON.stringify(saved_input_map, "\t"))
+	file.close()
+
+
+static func _save_input_map(ignored_actions: Array[StringName]) -> Dictionary:
+	var saved_input_map: Dictionary = {}
 	var current_actions := InputMap.get_actions()
 	
 	for action in current_actions:
@@ -185,22 +199,14 @@ static func save_keybinds(path: String = default_path, ignored_actions: Array[St
 			if not was_modified:
 				continue
 		
-		data[action] = _save_action(action)
+		saved_input_map[action] = _save_action(action)
 	
 	## Was trying to add a way to save that an action was erased.
 	#for action in _default_actions:
 		#if not action in current_actions:
 			#data[action] = []
 	
-	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
-	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
-	
-	if file == null:
-		_print_file_error(path)
-		return
-	
-	file.store_string(JSON.stringify(data, "\t"))
-	file.close()
+	return saved_input_map
 
 
 static func _save_action(action: StringName) -> Array[Dictionary]:
@@ -266,16 +272,21 @@ static func load_keybinds(path: String = default_path) -> void:
 		_print_file_error(path)
 		return
 	
-	var data: Dictionary = JSON.parse_string(file.get_as_text())
-	if data == null:
+	var saved_input_map: Dictionary = JSON.parse_string(file.get_as_text())
+	if saved_input_map == null:
 		push_error("Failed parsing {0} keybinds due to JSON error.".format([
 			path,
 		]))
 		return
 	
+	_load_input_map(saved_input_map)
+
+
+static func _load_input_map(saved_input_map: Dictionary) -> void:
 	InputMap.load_from_project_settings()
-	for action in data:
-		_load_action(action, data[action])
+	modified_actions.clear()
+	for action in saved_input_map:
+		_load_action(action, saved_input_map[action])
 
 
 static func _load_action(action: StringName, data: Array) -> void:
@@ -290,8 +301,7 @@ static func _load_action(action: StringName, data: Array) -> void:
 		else:
 			InputMap.action_add_event(action, _load_event(event))
 	
-	if action not in modified_actions:
-		modified_actions.push_back(action)
+	set_action_as_modified(action)
 
 
 static func _load_event(event: Dictionary) -> InputEvent:
