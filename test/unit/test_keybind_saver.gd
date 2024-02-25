@@ -13,6 +13,14 @@ func assert_event_list_equal(a: Array[InputEvent], b: Array[InputEvent], msg: St
 			fail_test(msg + (" (failed on item #%d: %s != %s)" % [i, event_a, event_b]))
 
 
+func assert_action_is_events(action: StringName, events: Array[InputEvent], msg: String) -> void:
+	assert_event_list_equal(
+		InputMap.action_get_events(action),
+		events,
+		msg
+	)
+
+
 
 func test_saving_keybinds() -> void:
 	# Verify later that recalling it will work.
@@ -31,8 +39,8 @@ func test_saving_keybinds() -> void:
 	InputMap.action_erase_event(&"unit_test", default_event)
 	KeybindsSaver.set_action_as_modified(&"unit_test")
 	KeybindsSaver.reset_all()
-	assert_event_list_equal(
-		InputMap.action_get_events(&"unit_test"),
+	assert_action_is_events(
+		&"unit_test",
 		[default_event],
 		"`KeybindsSaver.reset_all()` don't work."
 	)
@@ -41,8 +49,8 @@ func test_saving_keybinds() -> void:
 	InputMap.action_erase_event(&"unit_test", default_event)
 	KeybindsSaver.set_action_as_modified(&"unit_test")
 	KeybindsSaver.reset(&"unit_test")
-	assert_event_list_equal(
-		InputMap.action_get_events(&"unit_test"),
+	assert_action_is_events(
+		&"unit_test",
 		[default_event],
 		"`KeybindsSaver.reset()` don't work."
 	)
@@ -56,17 +64,64 @@ func test_saving_keybinds() -> void:
 	KeybindsSaver.set_action_as_modified(&"unit_test")
 	KeybindsSaver.save_keybinds()
 	
-	assert_event_list_equal(
-		InputMap.action_get_events(&"unit_test"),
+	assert_action_is_events(
+		&"unit_test",
 		[new_event],
 		"Test preparation failed."
 	)
 	
 	KeybindsSaver.reset_all()
 	KeybindsSaver.load_keybinds()
-	assert_event_list_equal(
-		InputMap.action_get_events(&"unit_test"),
+	assert_action_is_events(
+		&"unit_test",
 		[new_event],
 		"`KeybindsSaver.load_keybinds()` don't work."
+	)
+	
+	# Test bulk remapping
+	KeybindsSaver.reset_all()
+	KeybindsSaver.save_keybinds()
+	KeybindsSaver.begin_bulk_remap()
+	InputMap.action_erase_event(&"unit_test", default_event)
+	InputMap.action_add_event(&"unit_test", new_event)
+	KeybindsSaver.set_action_as_modified(&"unit_test")
+	KeybindsSaver.save_keybinds() # Should no nothing
+	
+	#KeybindsSaver.reset_all() # Pas besoin car load_keybinds le fait
+	KeybindsSaver.load_keybinds()
+	assert_action_is_events(
+		&"unit_test",
+		[default_event],
+		"`KeybindsSaver.begin_bulk_remap()` don't disable `KeybindsSaver.begin_bulk_remap()`."
+	)
+	
+	KeybindsSaver.reset_all()
+	InputMap.action_erase_event(&"unit_test", default_event)
+	InputMap.action_add_event(&"unit_test", new_event)
+	KeybindsSaver.set_action_as_modified(&"unit_test")
+	KeybindsSaver.validate_bulk_remap()
+	KeybindsSaver.load_keybinds()
+	assert_action_is_events(
+		&"unit_test",
+		[new_event],
+		"`KeybindsSaver.begin_bulk_remap()` don't disable `KeybindsSaver.begin_bulk_remap()`."
+	)
+	
+	KeybindsSaver.reset_all()
+	KeybindsSaver.save_keybinds()
+	InputMap.action_erase_event(&"unit_test", default_event)
+	InputMap.action_add_event(&"unit_test", new_event)
+	KeybindsSaver.set_action_as_modified(&"unit_test")
+	KeybindsSaver.cancel_bulk_remap()
+	assert_action_is_events(
+		&"unit_test",
+		[default_event],
+		"`KeybindsSaver.begin_bulk_remap()` don't disable `KeybindsSaver.begin_bulk_remap()`."
+	)
+	KeybindsSaver.load_keybinds()
+	assert_action_is_events(
+		&"unit_test",
+		[default_event],
+		"`KeybindsSaver.begin_bulk_remap()` don't disable `KeybindsSaver.begin_bulk_remap()`."
 	)
 

@@ -106,6 +106,8 @@ static var modified_actions: Array[StringName] = []
 
 
 static var _default_actions: Dictionary = {}
+static var _bulk_remap: bool = false
+static var _bulk_remap_saved_input_map: Dictionary = {}
 
 
 ## Set an action as modified, so it will be saved in case [member only_save_modified_actions] is true.
@@ -163,9 +165,42 @@ static func get_default_event(action: StringName, idx: int) -> InputEvent:
 	return events[idx]
 
 
+## Turn on bulk remapping.
+## During bulk remapping, [method save_keybinds] do nothing.
+## Calling this method while bulk remapping will do nothing.
+## Use [method validate_bulk_remap] or [method cancel_bulk_remap] to exit this mode.
+static func begin_bulk_remap() -> void:
+	_bulk_remap = true
+	_bulk_remap_saved_input_map = _save_input_map(default_ignored_actions)
+
+
+## See [method begin_bulk_remap].
+static func is_bulk_remapping() -> bool:
+	return _bulk_remap
+
+
+## Exit bulk remapping mode.
+## If [param save] is true, keybinds will be saved with default parameters.
+static func validate_bulk_remap(save: bool = true) -> void:
+	_bulk_remap = false
+	if save:
+		save_keybinds()
+	_bulk_remap_saved_input_map = {}
+
+
+static func cancel_bulk_remap() -> void:
+	_bulk_remap = false
+	_load_input_map(_bulk_remap_saved_input_map)
+	_bulk_remap_saved_input_map = {}
+
+
 ## Save keybinds to a file. 
 ## If [member only_save_modified_actions] is true: Make sur to call [method set_action_as_modified].
+## If in bulk remapping mode, this method does nothing.
 static func save_keybinds(path: String = default_path, ignored_actions: Array[StringName] = default_ignored_actions) -> void:
+	if _bulk_remap:
+		return
+	
 	var saved_input_map := _save_input_map(ignored_actions)
 	
 	DirAccess.make_dir_recursive_absolute(path.get_base_dir())

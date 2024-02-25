@@ -1,2 +1,1 @@
-- [ ] ~~Refactor saving using the same system as in Bloc-Notes++~~ Not worth it because action are not stored as objects in InputMap
-- [ ] Add a way to temporary change keybinds.
+- [ ] Nothing more for now
