@@ -1,1 +1,3 @@
-- [ ] Nothing more for now
+- [ ] Think to saving list of ignored actions in saved keybinds so that having different ignored actions work when loading.
+  - [ ] Does it work both ways ? (having more/less ignored actions)
+- [ ] Add way to save only modified events inside an action.

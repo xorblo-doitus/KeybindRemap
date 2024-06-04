@@ -7,8 +7,8 @@ func _ready() -> void:
 #	print(InputMap.get_actions())
 #	OS.open_midi_inputs()
 #	print(OS.get_connected_midi_inputs())
-	KeybindsSaver.set_current_mapping_as_default()
-	KeybindsSaver.load_keybinds()
+	KeybindsSaver.shared.set_current_mapping_as_default()
+	KeybindsSaver.shared.load_keybinds()
 #	add_child(preload("res://addons/keybind_remap/input_chooser/default_input_chooser.tscn").instantiate())
 
 
