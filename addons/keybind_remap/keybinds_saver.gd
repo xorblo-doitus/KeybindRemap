@@ -146,6 +146,18 @@ func set_current_mapping_as_default() -> void:
 	only_save_modified_actions = start_only_save_modified_actions
 
 
+## Remove all actions from the input map,
+## even [member ignored_actions] if [param clear_ignored_actions is true.
+func clear_input_map(clear_ignored_actions: bool = false) -> void:
+	if clear_ignored_actions:
+		for action in InputMap.get_actions():
+			InputMap.erase_action(action)
+	else:
+		for action in InputMap.get_actions():
+			if action not in ignored_actions:
+				InputMap.erase_action(action)
+
+
 ## Reset an action back to it's orginal keybinds. See [method set_current_mapping_as_default]
 func reset(action: StringName) -> void:
 	if action in _default_input_map:
@@ -352,12 +364,11 @@ func _load_input_map(saved_input_map: Dictionary, reset: _InputMapLoadingReset =
 		_InputMapLoadingReset.DEFAULT:
 			reset_all()
 		_InputMapLoadingReset.CLEAR:
-			for action in InputMap.get_actions():
-				if action not in ignored_actions:
-					InputMap.erase_action(action)
+			clear_input_map()
 	
 	for action in saved_input_map:
 		_load_action(action, saved_input_map[action])
+
 
 
 func _load_action(action: StringName, data: Array) -> void:
