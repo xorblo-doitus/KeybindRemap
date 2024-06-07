@@ -21,7 +21,6 @@ func assert_action_is_events(action: StringName, events: Array[InputEvent], msg:
 	)
 
 
-
 func test_saving_keybinds() -> void:
 	# Verify later that recalling it will work.
 	KeybindsSaver.shared.set_current_mapping_as_default()
@@ -125,3 +124,20 @@ func test_saving_keybinds() -> void:
 		"`KeybindsSaver.shared.begin_bulk_remap()` don't disable `KeybindsSaver.shared.begin_bulk_remap()`."
 	)
 
+
+func test_default_input_map() -> void:
+	KeybindsSaver.shared.clear_input_map()
+	
+	# Create testing action
+	InputMap.add_action(&"unit_test")
+	var default_event: InputEventKey = InputEventKey.new()
+	default_event.unicode = 87
+	default_event.physical_keycode = KEY_Z
+	InputMap.action_add_event(&"unit_test", default_event)
+	
+	KeybindsSaver.shared.set_current_mapping_as_default()
+	
+	assert_true(
+		default_event.is_match(KeybindsSaver.shared.get_default_event(&"unit_test", 0)),
+		"KeybindsSaver.get_default_event() don't work."
+	)
