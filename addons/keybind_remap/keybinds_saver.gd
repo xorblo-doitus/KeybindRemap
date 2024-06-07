@@ -178,12 +178,12 @@ func get_default_event(action: StringName, idx: int) -> InputEvent:
 	if action not in _default_input_map:
 		return null
 	
-	var events: Array[InputEvent] = _default_input_map[action]
+	var events: Array[Dictionary] = _default_input_map[action].slice(1)
 	
 	if -len(events) > idx or idx >= len(events):
 		return null
 	
-	return events[idx]
+	return _load_event(events[idx])
 
 
 func get_default_dead_zone(action: StringName) -> float:
